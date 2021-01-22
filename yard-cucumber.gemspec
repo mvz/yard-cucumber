@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake', '~> 13.0'
   s.add_development_dependency 'redcarpet', '~> 3.5'
+  s.add_development_dependency 'webrick', '~> 1.7'
 
   s.rubygems_version   = "1.3.7"
   s.files            = `git ls-files`.split("\n")
