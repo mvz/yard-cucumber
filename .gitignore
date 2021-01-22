@@ -4,3 +4,6 @@
 # Documents folder
 doc
 .yardoc
+
+# Lockfile
+Gemfile.lock
