@@ -94,7 +94,6 @@ module Cucumber
         return if has_exclude_tags?(feature[:tags].map { |t| t[:name].gsub(/^@/, '') })
 
         @feature = YARD::CodeObjects::Cucumber::Feature.new(@namespace,File.basename(@file.gsub('.feature','').gsub('.','_'))) do |f|
-          f.comments = feature[:comments] ? feature[:comments].map{|comment| comment[:text]}.join("\n") : ''
           f.description = feature[:description] || ''
           f.add_file(@file,feature[:location][:line])
           f.keyword = feature[:keyword]
@@ -104,17 +103,12 @@ module Cucumber
           feature[:tags].each {|feature_tag| find_or_create_tag(feature_tag[:name],f) }
         end
 
-        background(feature[:background]) if feature[:background]
-
         feature[:children].each do |child|
-          case child[:type]
-            when :Background
-              background(child)
-            when :ScenarioOutline
-              outline = scenario_outline(child)
-              @feature.total_scenarios += outline.scenarios.size
-            when :Scenario
-              scenario(child)
+          background(child[:background]) if child[:background]
+          scenario(child[:scenario]) if child[:scenario]
+          if child[:rule]
+            outline = scenario_outline(child[:rule])
+            @feature.total_scenarios += outline.scenarios.size
           end
         end
 
@@ -132,7 +126,6 @@ module Cucumber
         #log.debug "BACKGROUND"
 
         @background = YARD::CodeObjects::Cucumber::Scenario.new(@feature,"background") do |b|
-          b.comments = background[:comments] ? background[:comments].map{|comment| comment.value}.join("\n") : ''
           b.description = background[:description] || ''
           b.keyword = background[:keyword]
           b.value = background[:name]
@@ -166,7 +159,6 @@ module Cucumber
         return if has_exclude_tags?(statement[:tags].map { |t| t[:name].gsub(/^@/, '') })
 
         scenario = YARD::CodeObjects::Cucumber::Scenario.new(@feature,"scenario_#{@feature.scenarios.length + 1}") do |s|
-          s.comments = statement[:comments] ? statement[:comments].map{|comment| comment.value}.join("\n") : ''
           s.description = statement[:description] || ''
           s.add_file(@file,statement[:location][:line])
           s.keyword = statement[:keyword]
@@ -350,17 +342,13 @@ module Cucumber
           s.add_file(@file,step[:location][:line])
         end
 
-        @table_owner.comments = step[:comments] ? step[:comments].map{|comment| comment.value}.join("\n") : ''
+        if (doc_string = step[:doc_string])
+          @table_owner.text = doc_string[:content]
+        end
 
-        multiline_arg = step[:argument]
-
-        case(multiline_arg[:type])
-        when :DocString
-          @table_owner.text = multiline_arg[:content]
-        when :DataTable
-          #log.info "Matrix: #{matrix(multiline_arg).collect{|row| row.collect{|cell| cell.class } }.flatten.join("\n")}"
-          @table_owner.table = matrix(multiline_arg[:rows])
-        end if multiline_arg
+        if (data_table = step[:data_table])
+          @table_owner.table = matrix(data_table[:rows])
+        end
 
         @table_owner.scenario = @step_container
         @step_container.steps << @table_owner
