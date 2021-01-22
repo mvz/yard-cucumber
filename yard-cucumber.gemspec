@@ -54,11 +54,11 @@ Gem::Specification.new do |s|
 
 }
 
-  s.add_development_dependency 'rake', '~> 10'
+  s.add_dependency 'cucumber', '~> 5.0'
+  s.add_dependency 'yard', '~> 0.9.26'
 
-  s.add_dependency 'gherkin', '>= 4.0', '< 6.0'
-  s.add_dependency 'cucumber', '>= 2.0', '< 4.0'
-  s.add_dependency 'yard', '~> 0.8', '>= 0.8.1'
+  s.add_development_dependency 'rake', '~> 13.0'
+  s.add_development_dependency 'redcarpet', '~> 3.5'
 
   s.rubygems_version   = "1.3.7"
   s.files            = `git ls-files`.split("\n")
