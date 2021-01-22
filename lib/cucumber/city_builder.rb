@@ -15,7 +15,7 @@ module Cucumber
       # @param [String] file the name of the file which the content belongs
       #
       def initialize(file)
-        super()
+        super(Cucumber::Messages::IdGenerator::UUID.new)
         @namespace = YARD::CodeObjects::Cucumber::CUCUMBER_NAMESPACE
         find_or_create_namespace(file)
         @file = file
