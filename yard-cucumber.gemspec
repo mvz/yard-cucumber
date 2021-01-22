@@ -1,30 +1,5 @@
 require File.dirname(__FILE__) + "/lib/yard-cucumber/version"
 
-module CucumberInTheYARD
-  def self.show_version_changes(version)
-    date = ""
-    changes = []
-    grab_changes = false
-
-    File.open("#{File.dirname(__FILE__)}/History.txt",'r') do |file|
-      while (line = file.gets) do
-
-        if line =~ /^===\s*#{version.gsub('.','\.')}\s*\/\s*(.+)\s*$/
-          grab_changes = true
-          date = $1.strip
-        elsif line =~ /^===\s*.+$/
-          grab_changes = false
-        elsif grab_changes
-          changes = changes << line
-        end
-
-      end
-    end
-
-    { :date => date, :changes => changes }
-  end
-end
-
 Gem::Specification.new do |s|
   s.name        = 'yard-cucumber'
   s.version     = ::CucumberInTheYARD::VERSION
@@ -40,19 +15,6 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
 
   s.platform    = Gem::Platform::RUBY
-
-  changes = CucumberInTheYARD.show_version_changes(::CucumberInTheYARD::VERSION)
-
-  s.post_install_message = %{
-(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
-
-  Thank you for installing yard-cucumber #{::CucumberInTheYARD::VERSION} / #{changes[:date]}.
-
-  Changes:
-  #{changes[:changes].collect{|change| "  #{change}"}.join("")}
-(::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::) (::)
-
-}
 
   s.add_dependency 'cucumber', '~> 5.0'
   s.add_dependency 'yard', '~> 0.9.26'
